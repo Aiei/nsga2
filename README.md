@@ -2,7 +2,7 @@
 
 NSGA-II (Non-dominated Sorting Genetic Algorithm II) implementation in TypeScript
 
-## How to Use
+## Getting Started
 
 Import the module
 ```
@@ -38,7 +38,7 @@ let nsga2 = new MOEA.NSGA2(
     50,     // population size.
     5,      // amount of generations.
     ZDT1,   // objective function.
-    randomX // generate variable function.
+    newX // generate variable function.
 );
 nsga2.mutationRate = 0.1;  // mutation probability (optional settings).
 nsga2.crossoverRate = 0.5; // crossover probability (optional settings).
@@ -47,6 +47,7 @@ Perform optimization
 ```
 let optimizedSolutions = nsga2.optimize();
 ```
+See [tests](tests) for further example
 
 ## Built With
 
