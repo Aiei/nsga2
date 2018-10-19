@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+    	"sourceMap": false,
+    	"target": "es6",
+    	"module": "amd",
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outFile": "../js/main.js"
+    },
+    "files": [
+        "main.ts"
+    ]
+}
