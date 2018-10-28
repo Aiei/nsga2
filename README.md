@@ -4,10 +4,6 @@ NSGA-II (Non-dominated Sorting Genetic Algorithm II) implementation in TypeScrip
 
 ## Getting Started
 
-Import the module
-```
-import {MOEA} from "./nsga2";
-```
 Specify the objective function
 ```
 // Example for ZDT1 problem
@@ -32,7 +28,7 @@ function newX(): number {
 ```
 Specify required parameters
 ```
-let nsga2 = new MOEA.NSGA2(
+var nsga2 = new MOEA.NSGA2(
     10,     // chromosome size.
     2,      // objective size.
     50,     // population size.
@@ -45,7 +41,7 @@ nsga2.crossoverRate = 0.5; // crossover probability (optional settings).
 ```
 Perform optimization
 ```
-let optimizedSolutions = nsga2.optimize();
+var optimizedSolutions = nsga2.optimize();
 ```
 See [tests](tests) for further example
 
