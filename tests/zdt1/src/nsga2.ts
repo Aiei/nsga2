@@ -27,20 +27,20 @@ export namespace MOEA
             this.objectiveFunction = objectiveFunction;
         }
 
-        optimize(): any {
+        optimize(frontOnly: boolean = false): any {
             let timeStamp = Date.now();
             // First parents
             let pop: Individual[];
             pop = this.initPopulation(pop);
             this.sort(pop);
-            this.setCrowdingDistances(pop);
+            pop = this.setCrowdingDistances(pop);
             // Main loop
             let generationCount: number = 1;
             while (generationCount < this.maxGenerations) {
                 let offsprings = this.generateOffsprings(pop);
                 pop = pop.concat(offsprings);
                 let sortedPop = this.sort(pop);
-                this.setCrowdingDistances(pop);
+                pop = this.setCrowdingDistances(pop);
                 let nextPop: Individual[] = [];
                 let sortedPopLength = sortedPop.length;
                 for (let i = 0; i < sortedPopLength; i++) {
@@ -62,8 +62,20 @@ export namespace MOEA
             // Timestamp
             console.log("NSGA2 Finished in " + (Date.now() - timeStamp) + 
                 " milliseconds.");
+            // Return pareto fronts only
+            if (frontOnly) {
+                let fpop: Individual[] = [];
+                for (let p of pop) {
+                    if (p.paretoRank == 1) {
+                        fpop.push(p);
+                    }
+                }
+                return fpop;
+            }
             return pop;
         }
+
+
 
         protected initPopulation(population: Individual[]): Individual[] {
             population = [];
@@ -125,7 +137,10 @@ export namespace MOEA
             return fronts;
         }
 
-        protected setCrowdingDistances(individuals: Individual[]) {
+        protected setCrowdingDistances(individuals: Individual[]): Individual[] {
+            for (let i = 0; i < individuals.length; i++) {
+                individuals[i].crowdingDistance = 0;
+            }
             for (let m = 0; m < this.objectiveSize; m++) {
 
                 let objectiveMin: number = Infinity;
@@ -139,11 +154,11 @@ export namespace MOEA
                     }
                 }
 
-                for (let i = 1; i < individuals.length - 1; i++) {
-                    individuals[i].crowdingDistance = 0;
-                }
-
                 this.sortByObjective(individuals, m);
+                // Prevent NaN
+                if (objectiveMax - objectiveMin <= 0) {
+                    continue;
+                }
                 individuals[0].crowdingDistance = Infinity;
                 let lastIndex = individuals.length - 1;
                 individuals[lastIndex].crowdingDistance = Infinity;
@@ -157,6 +172,7 @@ export namespace MOEA
                         );
                 }
             }
+            return individuals;
         }
 
         protected sortByObjective(individuals: Individual[], objectiveId: number) {
@@ -177,8 +193,9 @@ export namespace MOEA
         protected generateOffsprings(parents: Individual[]): Individual[] {
             let offsprings: Individual[] = [];
             while (offsprings.length < this.populationSize) {
-                let childs = this.mate(
-                    this.getGoodParent(parents), this.getGoodParent(parents));
+                let parentA = this.getGoodParent(parents);
+                let parentB = this.getGoodParent(parents);
+                let childs = this.mate(parentA, parentB);
                 offsprings.push(childs[0], childs[1]);
             }
             return offsprings;
@@ -262,7 +279,7 @@ export namespace MOEA
         }
     }
 
-    class Individual 
+    export class Individual 
     {
         chromosome: any[];
         objectives: number[];
